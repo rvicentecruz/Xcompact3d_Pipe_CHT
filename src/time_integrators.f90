@@ -206,20 +206,25 @@ contains
     !! LOCAL
     INTEGER :: is, i, j, k, it
 
-    !IF (ivf.NE.0) THEN !Viscous filtering convective terms from previous time steps
-    !    DO it=2,ntime
-    !        IF (itime.GE.it) THEN
-    !            call viscous_filter(dux1(:,:,:,it),0,0)
-    !            call viscous_filter(duy1(:,:,:,it),0,0)
-    !            call viscous_filter(duz1(:,:,:,it),0,0)
-    !            IF (iscalar.NE.0) then
-    !                DO is=1,numscalar
-    !                    call viscous_filter(dphi1(:,:,:,it,is),is,0)
-    !                ENDDO
-    !            ENDIF
-    !        ENDIF
-    !    ENDDO
-    !ENDIF
+    !Viscous filtering convective terms from previous time steps (VF3)
+    !-----------------------------------------------------------------
+    !Comment lines to use VF1 instead (accuracy compromise for improved 
+    !performance). See (Lamballais et al. 2021, JCP) for more details
+    IF (ivf.NE.0) THEN 
+        DO it=2,ntime
+            IF (itime.GE.it) THEN
+                call viscous_filter(dux1(:,:,:,it),0,0)
+                call viscous_filter(duy1(:,:,:,it),0,0)
+                call viscous_filter(duz1(:,:,:,it),0,0)
+                IF (iscalar.NE.0) then
+                    DO is=1,numscalar
+                        call viscous_filter(dphi1(:,:,:,it,is),is,0)
+                    ENDDO
+                ENDIF
+            ENDIF
+        ENDDO
+    ENDIF
+    !-----------------------------------------------------------------
 
     CALL int_time_momentum(ux1, uy1, uz1, dux1, duy1, duz1)
 
@@ -282,7 +287,10 @@ contains
        ENDIF
     ENDIF
 
-    IF (ivf.NE.0) THEN !Viscous filtering ux1,uy1,uz1 and phi1
+    !Viscous filtering ux1,uy1,uz1 and scalar at n+1 (VF3 and VF1)
+    !-----------------------------------------------------------------
+    !See Lamballais et al. 2021, JCP for more details
+    IF (ivf.NE.0) THEN
         call viscous_filter(ux1,0,0)
         call viscous_filter(uy1,0,0)
         call viscous_filter(uz1,0,0)
@@ -292,6 +300,7 @@ contains
             ENDDO
         ENDIF
     ENDIF
+    !-----------------------------------------------------------------
 
   ENDSUBROUTINE int_time
 

@@ -428,6 +428,13 @@ contains
     return
   end SUBROUTINE exact_ib_pipe
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!
+  !!  SUBROUTINE: int_pipe
+  !!      AUTHOR: Rodrigo Vicente Cruz
+  !! DESCRIPTION: Initial laminar conditions in pipe
+  !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !********************************************************************
   !
   SUBROUTINE init_pipe (ux1,uy1,uz1,ep1,phi1)
@@ -600,8 +607,8 @@ contains
   !!
   !!  SUBROUTINE: pipe_flrt
   !!      AUTHOR: Rodrigo Vicente Cruz
-  !! DESCRIPTION: To keep constant flow rate, the bulk velocity is
-  !!              adjusted to compensate the pipe pressure drop
+  !! DESCRIPTION: Adjustement of bulk velocity to keep constant 
+  !!              flow rate
   !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !********************************************************************
@@ -840,6 +847,13 @@ contains
     return
   end SUBROUTINE pipe_blkt
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!
+  !!  SUBROUTINE: postprocess_pipe
+  !!      AUTHOR: Rodrigo Vicente Cruz
+  !! DESCRIPTION: Statistics collection for pipe
+  !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !********************************************************************
   !
   SUBROUTINE postprocess_pipe(ux1,uy1,uz1,pp3,phi1,ep1) !By Rodrigo Vicente Cruz
@@ -1099,7 +1113,7 @@ contains
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !!
-    !!  SUBROUTINE: set_neumannbc_coefficients
+    !!  SUBROUTINE: set_nbc_coefficients
     !!      AUTHOR: Rodrigo Vicente Cruz
     !! DESCRIPTION: Prepares coefficients of: i)3rd order non-centred derivative
     !!              scheme (*nscy and *nscz); ii) Non-centred extrapo-
@@ -1381,21 +1395,11 @@ contains
                 dnscy_s(1,j,k)=(r1)/(((r2**three)+((-r1-one)*r2**two)+(r1*r2))*dybs) 
                 !ii) Extrapolation: with or without skip
                 if (iskip_e.eq.0) then !without skip 
-                    !====DEBUG
-                    !r1=(dyb+   dy)/(dyb)
-                    !r2=(dyb+two*dy)/(dyb)
-                    !r3=(dyb+three*dy)/(dyb)
-                    !=========
                     s0=(dyb)
                     s1=(dyb+dy)
                     s2=(dyb+two*dy)
                     s3=(dyb+three*dy)
                 else                   !with skip
-                    !====DEBUG
-                    !r1=(dybs+   dy)/(dybs)
-                    !r2=(dybs+two*dy)/(dybs)
-                    !r3=(dybs+three*dy)/(dybs)
-                    !=========
                     s0=(dybs)
                     s1=(dybs+dy)
                     s2=(dybs+two*dy)
@@ -1407,34 +1411,16 @@ contains
                     censcy_s(1,j,k)=zero
                     denscy_s(1,j,k)=zero
                 elseif (iextp.eq.2) then !2nd order
-                    !====DEBUG
-                    !aenscy_s(1,j,k)=r1/(r1-one)
-                    !benscy_s(1,j,k)=-one/(r1-one)
-                    !censcy_s(1,j,k)=zero
-                    !denscy_s(1,j,k)=zero
-                    !=========
                     aenscy_s(1,j,k)=s1/(s1-s0)
                     benscy_s(1,j,k)=-(s0)/(s1-s0)
                     censcy_s(1,j,k)=zero
                     denscy_s(1,j,k)=zero
                 elseif (iextp.eq.3) then !3rd order
-                    !====DEBUG
-                    !aenscy_s(1,j,k)=r1*r2/((r1-one)*r2-r1+one)
-                    !benscy_s(1,j,k)=-r2/((r1-one)*r2-r1*(r1-one))
-                    !censcy_s(1,j,k)=r1/(r2*r2-(r1+one)*r2+r1)
-                    !denscy_s(1,j,k)=zero
-                    !=========
                     aenscy_s(1,j,k)=s1*s2/((s1-s0)*s2-s0*s1+s0*s0)
                     benscy_s(1,j,k)=-(s0*s2)/((s1-s0)*s2-s1*s1+s0*s1)
                     censcy_s(1,j,k)=(s0*s1)/(s2*s2-s2*(s0+s1)+s0*s1)
                     denscy_s(1,j,k)=zero
                 elseif (iextp.eq.4) then !4th order
-                    !====DEBUG
-                    !aenscy_s(1,j,k)=r1*r2*r3/(((r1-one)*r2-r1+one)*r3+(one-r1)*r2+r1-one)
-                    !benscy_s(1,j,k)=-r2*r3/(((r1-one)*r2-r1*r1+r1)*r3+(one-r1)*r1*r2+r1*r1*(r1-one))
-                    !censcy_s(1,j,k)=r1*r3/((r2*r2-(r1+one)*r2+r1)*r3-r2*r2*r2+(r1+one)*r2*r2-r1*r2)
-                    !denscy_s(1,j,k)=-r1*r2/(r3*r3*r3-(r1+r2+one)*r3*r3+((r1+one)*r2+r1)*r3-r1*r2)         
-                    !=========
                     aenscy_s(1,j,k)=(s1*s2*s3)/&
                                     ((s2*(s1-s0)-s0*s1+s0*s0)*s3+(s0*s0-s0*s1)*s2+s0*s0*s1-s0*s0*s0)
                     benscy_s(1,j,k)=-(s0*s2*s3)/&
@@ -1464,21 +1450,11 @@ contains
                 dnscy_s(2,j,k)=(r1)/(((r2**three)+((-r1-one)*r2**two)+(r1*r2))*dybs) 
                 !ii) Extrapolation: with or without skip
                 if (iskip_e.eq.0) then !without skip 
-                    !====DEBUG
-                    !r1=(dyb+   dy)/(dyb)
-                    !r2=(dyb+two*dy)/(dyb)
-                    !r3=(dyb+three*dy)/(dyb)
-                    !=========
                     s0=(dyb)
                     s1=(dyb+dy)
                     s2=(dyb+two*dy)
                     s3=(dyb+three*dy)
                 else                   !with skip
-                    !====DEBUG
-                    !r1=(dybs+   dy)/(dybs)
-                    !r2=(dybs+two*dy)/(dybs)
-                    !r3=(dybs+three*dy)/(dybs)
-                    !=========
                     s0=(dybs)
                     s1=(dybs+dy)
                     s2=(dybs+two*dy)
@@ -1490,34 +1466,16 @@ contains
                     censcy_s(2,j,k)=zero
                     denscy_s(2,j,k)=zero
                 elseif (iextp.eq.2) then !2nd order
-                    !====DEBUG
-                    !aenscy_s(2,j,k)=r1/(r1-one)
-                    !benscy_s(2,j,k)=-one/(r1-one)
-                    !censcy_s(2,j,k)=zero
-                    !denscy_s(2,j,k)=zero
-                    !=========
                     aenscy_s(2,j,k)=s1/(s1-s0)
                     benscy_s(2,j,k)=-(s0)/(s1-s0)
                     censcy_s(2,j,k)=zero
                     denscy_s(2,j,k)=zero
                 elseif (iextp.eq.3) then !3rd order
-                    !====DEBUG
-                    !aenscy_s(2,j,k)=r1*r2/((r1-one)*r2-r1+one)
-                    !benscy_s(2,j,k)=-r2/((r1-one)*r2-r1*(r1-one))
-                    !censcy_s(2,j,k)=r1/(r2*r2-(r1+one)*r2+r1)
-                    !denscy_s(2,j,k)=zero
-                    !=========
                     aenscy_s(2,j,k)=s1*s2/((s1-s0)*s2-s0*s1+s0*s0)
                     benscy_s(2,j,k)=-(s0*s2)/((s1-s0)*s2-s1*s1+s0*s1)
                     censcy_s(2,j,k)=(s0*s1)/(s2*s2-s2*(s0+s1)+s0*s1)
                     denscy_s(2,j,k)=zero
                 elseif (iextp.eq.4) then !4th order
-                    !====DEBUG
-                    !aenscy_s(2,j,k)=r1*r2*r3/(((r1-one)*r2-r1+one)*r3+(one-r1)*r2+r1-one)
-                    !benscy_s(2,j,k)=-r2*r3/(((r1-one)*r2-r1*r1+r1)*r3+(one-r1)*r1*r2+r1*r1*(r1-one))
-                    !censcy_s(2,j,k)=r1*r3/((r2*r2-(r1+one)*r2+r1)*r3-r2*r2*r2+(r1+one)*r2*r2-r1*r2)
-                    !denscy_s(2,j,k)=-r1*r2/(r3*r3*r3-(r1+r2+one)*r3*r3+((r1+one)*r2+r1)*r3-r1*r2)         
-                    !=========
                     aenscy_s(2,j,k)=(s1*s2*s3)/&
                                     ((s2*(s1-s0)-s0*s1+s0*s0)*s3+(s0*s0-s0*s1)*s2+s0*s0*s1-s0*s0*s0)
                     benscy_s(2,j,k)=-(s0*s2*s3)/&
@@ -1565,21 +1523,11 @@ contains
                 dnscz(1,k,j)=(r1)/(((r2**three)+((-r1-one)*r2**two)+(r1*r2))*dzbs) 
                 !ii) Extrapolation: with or without skip
                 if (iskip_e.eq.0) then !without skip 
-                    !====DEBUG
-                    !r1=(dzb+   dz)/(dzb)
-                    !r2=(dzb+two*dz)/(dzb)
-                    !r3=(dzb+three*dz)/(dzb)
-                    !=========
                     s0=(dzb)
                     s1=(dzb+dz)
                     s2=(dzb+two*dz)
                     s3=(dzb+three*dz)
                 else                   !with skip
-                    !====DEBUG
-                    !r1=(dzbs+   dz)/(dzbs)
-                    !r2=(dzbs+two*dz)/(dzbs)
-                    !r3=(dzbs+three*dz)/(dzbs)
-                    !=========
                     s0=(dzbs)
                     s1=(dzbs+dz)
                     s2=(dzbs+two*dz)
@@ -1591,34 +1539,16 @@ contains
                     censcz(1,k,j)=zero
                     denscz(1,k,j)=zero
                 elseif (iextp.eq.2) then !2nd order
-                    !====DEBUG
-                    !aenscz(1,k,j)=r1/(r1-one)
-                    !benscz(1,k,j)=-one/(r1-one)
-                    !censcz(1,k,j)=zero
-                    !denscz(1,k,j)=zero
-                    !=========
                     aenscz(1,k,j)=s1/(s1-s0)
                     benscz(1,k,j)=-(s0)/(s1-s0)
                     censcz(1,k,j)=zero
                     denscz(1,k,j)=zero
                 elseif (iextp.eq.3) then !3rd order
-                    !====DEBUG
-                    !aenscz(1,k,j)=r1*r2/((r1-one)*r2-r1+one)
-                    !benscz(1,k,j)=-r2/((r1-one)*r2-r1*(r1-one))
-                    !censcz(1,k,j)=r1/(r2*r2-(r1+one)*r2+r1)
-                    !denscz(1,k,j)=zero
-                    !=========
                     aenscz(1,k,j)=s1*s2/((s1-s0)*s2-s0*s1+s0*s0)
                     benscz(1,k,j)=-(s0*s2)/((s1-s0)*s2-s1*s1+s0*s1)
                     censcz(1,k,j)=(s0*s1)/(s2*s2-s2*(s0+s1)+s0*s1)
                     denscz(1,k,j)=zero
                 elseif (iextp.eq.4) then !4th order
-                    !====DEBUG
-                    !aenscz(1,k,j)=r1*r2*r3/(((r1-one)*r2-r1+one)*r3+(one-r1)*r2+r1-one)
-                    !benscz(1,k,j)=-r2*r3/(((r1-one)*r2-r1*r1+r1)*r3+(one-r1)*r1*r2+r1*r1*(r1-one))
-                    !censcz(1,k,j)=r1*r3/((r2*r2-(r1+one)*r2+r1)*r3-r2*r2*r2+(r1+one)*r2*r2-r1*r2)
-                    !denscz(1,k,j)=-r1*r2/(r3*r3*r3-(r1+r2+one)*r3*r3+((r1+one)*r2+r1)*r3-r1*r2)         
-                    !=========
                     aenscz(1,k,j)=(s1*s2*s3)/&
                                   ((s2*(s1-s0)-s0*s1+s0*s0)*s3+(s0*s0-s0*s1)*s2+s0*s0*s1-s0*s0*s0)
                     benscz(1,k,j)=-(s0*s2*s3)/&
@@ -1643,21 +1573,11 @@ contains
                 dnscz(2,k,j)=(r1)/(((r2**three)+((-r1-one)*r2**two)+(r1*r2))*dzbs) 
                 !ii) Extrapolation: with or without skip
                 if (iskip_e.eq.0) then !without skip 
-                    !====DEBUG
-                    !r1=(dzb+   dz)/(dzb)
-                    !r2=(dzb+two*dz)/(dzb)
-                    !r3=(dzb+three*dz)/(dzb)
-                    !=========
                     s0=(dzb)
                     s1=(dzb+dz)
                     s2=(dzb+two*dz)
                     s3=(dzb+three*dz)
                 else                   !with skip
-                    !====DEBUG
-                    !r1=(dzbs+   dz)/(dzbs)
-                    !r2=(dzbs+two*dz)/(dzbs)
-                    !r3=(dzbs+three*dz)/(dzbs)
-                    !=========
                     s0=(dzbs)
                     s1=(dzbs+dz)
                     s2=(dzbs+two*dz)
@@ -1669,34 +1589,16 @@ contains
                     censcz(2,k,j)=zero
                     denscz(2,k,j)=zero
                 elseif (iextp.eq.2) then !2nd order
-                    !====DEBUG
-                    !aenscz(2,k,j)=r1/(r1-one)
-                    !benscz(2,k,j)=-one/(r1-one)
-                    !censcz(2,k,j)=zero
-                    !denscz(2,k,j)=zero
-                    !=========
                     aenscz(2,k,j)=s1/(s1-s0)
                     benscz(2,k,j)=-(s0)/(s1-s0)
                     censcz(2,k,j)=zero
                     denscz(2,k,j)=zero
                 elseif (iextp.eq.3) then !3rd order
-                    !====DEBUG
-                    !aenscz(2,k,j)=r1*r2/((r1-one)*r2-r1+one)
-                    !benscz(2,k,j)=-r2/((r1-one)*r2-r1*(r1-one))
-                    !censcz(2,k,j)=r1/(r2*r2-(r1+one)*r2+r1)
-                    !denscz(2,k,j)=zero
-                    !=========
                     aenscz(2,k,j)=s1*s2/((s1-s0)*s2-s0*s1+s0*s0)
                     benscz(2,k,j)=-(s0*s2)/((s1-s0)*s2-s1*s1+s0*s1)
                     censcz(2,k,j)=(s0*s1)/(s2*s2-s2*(s0+s1)+s0*s1)
                     denscz(2,k,j)=zero
                 elseif (iextp.eq.4) then !4th order
-                    !====DEBUG
-                    !aenscz(2,k,j)=r1*r2*r3/(((r1-one)*r2-r1+one)*r3+(one-r1)*r2+r1-one)
-                    !benscz(2,k,j)=-r2*r3/(((r1-one)*r2-r1*r1+r1)*r3+(one-r1)*r1*r2+r1*r1*(r1-one))
-                    !censcz(2,k,j)=r1*r3/((r2*r2-(r1+one)*r2+r1)*r3-r2*r2*r2+(r1+one)*r2*r2-r1*r2)
-                    !denscz(2,k,j)=-r1*r2/(r3*r3*r3-(r1+r2+one)*r3*r3+((r1+one)*r2+r1)*r3-r1*r2)         
-                    !=========
                     aenscz(2,k,j)=(s1*s2*s3)/&
                                   ((s2*(s1-s0)-s0*s1+s0*s0)*s3+(s0*s0-s0*s1)*s2+s0*s0*s1-s0*s0*s0)
                     benscz(2,k,j)=-(s0*s2*s3)/&
@@ -1728,21 +1630,11 @@ contains
                 dnscz_s(1,k,j)=(r1)/(((r2**three)+((-r1-one)*r2**two)+(r1*r2))*dzbs) 
                 !ii) Extrapolation: with or without skip
                 if (iskip_e.eq.0) then !without skip 
-                    !====DEBUG
-                    !r1=(dzb+   dz)/(dzb)
-                    !r2=(dzb+two*dz)/(dzb)
-                    !r3=(dzb+three*dz)/(dzb)
-                    !=========
                     s0=(dzb)
                     s1=(dzb+dz)
                     s2=(dzb+two*dz)
                     s3=(dzb+three*dz)
                 else                   !with skip
-                    !====DEBUG
-                    !r1=(dzbs+   dz)/(dzbs)
-                    !r2=(dzbs+two*dz)/(dzbs)
-                    !r3=(dzbs+three*dz)/(dzbs)
-                    !=========
                     s0=(dzbs)
                     s1=(dzbs+dz)
                     s2=(dzbs+two*dz)
@@ -1754,34 +1646,16 @@ contains
                     censcz_s(1,k,j)=zero
                     denscz_s(1,k,j)=zero
                 elseif (iextp.eq.2) then !2nd order
-                    !====DEBUG
-                    !aenscz_s(1,k,j)=r1/(r1-one)
-                    !benscz_s(1,k,j)=-one/(r1-one)
-                    !censcz_s(1,k,j)=zero
-                    !denscz_s(1,k,j)=zero
-                    !=========
                     aenscz_s(1,k,j)=s1/(s1-s0)
                     benscz_s(1,k,j)=-(s0)/(s1-s0)
                     censcz_s(1,k,j)=zero
                     denscz_s(1,k,j)=zero
                 elseif (iextp.eq.3) then !3rd order
-                    !====DEBUG
-                    !aenscz_s(1,k,j)=r1*r2/((r1-one)*r2-r1+one)
-                    !benscz_s(1,k,j)=-r2/((r1-one)*r2-r1*(r1-one))
-                    !censcz_s(1,k,j)=r1/(r2*r2-(r1+one)*r2+r1)
-                    !denscz_s(1,k,j)=zero
-                    !=========
                     aenscz_s(1,k,j)=s1*s2/((s1-s0)*s2-s0*s1+s0*s0)
                     benscz_s(1,k,j)=-(s0*s2)/((s1-s0)*s2-s1*s1+s0*s1)
                     censcz_s(1,k,j)=(s0*s1)/(s2*s2-s2*(s0+s1)+s0*s1)
                     denscz_s(1,k,j)=zero
                 elseif (iextp.eq.4) then !4th order
-                    !====DEBUG
-                    !aenscz_s(1,k,j)=r1*r2*r3/(((r1-one)*r2-r1+one)*r3+(one-r1)*r2+r1-one)
-                    !benscz_s(1,k,j)=-r2*r3/(((r1-one)*r2-r1*r1+r1)*r3+(one-r1)*r1*r2+r1*r1*(r1-one))
-                    !censcz_s(1,k,j)=r1*r3/((r2*r2-(r1+one)*r2+r1)*r3-r2*r2*r2+(r1+one)*r2*r2-r1*r2)
-                    !denscz_s(1,k,j)=-r1*r2/(r3*r3*r3-(r1+r2+one)*r3*r3+((r1+one)*r2+r1)*r3-r1*r2)         
-                    !=========
                     aenscz_s(1,k,j)=(s1*s2*s3)/&
                                     ((s2*(s1-s0)-s0*s1+s0*s0)*s3+(s0*s0-s0*s1)*s2+s0*s0*s1-s0*s0*s0)
                     benscz_s(1,k,j)=-(s0*s2*s3)/&
@@ -1806,21 +1680,11 @@ contains
                 dnscz_s(2,k,j)=(r1)/(((r2**three)+((-r1-one)*r2**two)+(r1*r2))*dzbs) 
                 !ii) Extrapolation: with or without skip
                 if (iskip_e.eq.0) then !without skip 
-                    !====DEBUG
-                    !r1=(dzb+   dz)/(dzb)
-                    !r2=(dzb+two*dz)/(dzb)
-                    !r3=(dzb+three*dz)/(dzb)
-                    !=========
                     s0=(dzb)
                     s1=(dzb+dz)
                     s2=(dzb+two*dz)
                     s3=(dzb+three*dz)
                 else                   !with skip
-                    !====DEBUG
-                    !r1=(dzbs+   dz)/(dzbs)
-                    !r2=(dzbs+two*dz)/(dzbs)
-                    !r3=(dzbs+three*dz)/(dzbs)
-                    !=========
                     s0=(dzbs)
                     s1=(dzbs+dz)
                     s2=(dzbs+two*dz)
@@ -1832,34 +1696,16 @@ contains
                     censcz_s(2,k,j)=zero
                     denscz_s(2,k,j)=zero
                 elseif (iextp.eq.2) then !2nd order
-                    !====DEBUG
-                    !aenscz_s(2,k,j)=r1/(r1-one)
-                    !benscz_s(2,k,j)=-one/(r1-one)
-                    !censcz_s(2,k,j)=zero
-                    !denscz_s(2,k,j)=zero
-                    !=========
                     aenscz_s(2,k,j)=s1/(s1-s0)
                     benscz_s(2,k,j)=-(s0)/(s1-s0)
                     censcz_s(2,k,j)=zero
                     denscz_s(2,k,j)=zero
                 elseif (iextp.eq.3) then !3rd order
-                    !====DEBUG
-                    !aenscz_s(2,k,j)=r1*r2/((r1-one)*r2-r1+one)
-                    !benscz_s(2,k,j)=-r2/((r1-one)*r2-r1*(r1-one))
-                    !censcz_s(2,k,j)=r1/(r2*r2-(r1+one)*r2+r1)
-                    !denscz_s(2,k,j)=zero
-                    !=========
                     aenscz_s(2,k,j)=s1*s2/((s1-s0)*s2-s0*s1+s0*s0)
                     benscz_s(2,k,j)=-(s0*s2)/((s1-s0)*s2-s1*s1+s0*s1)
                     censcz_s(2,k,j)=(s0*s1)/(s2*s2-s2*(s0+s1)+s0*s1)
                     denscz_s(2,k,j)=zero
                 elseif (iextp.eq.4) then !4th order
-                    !====DEBUG
-                    !aenscz_s(2,k,j)=r1*r2*r3/(((r1-one)*r2-r1+one)*r3+(one-r1)*r2+r1-one)
-                    !benscz_s(2,k,j)=-r2*r3/(((r1-one)*r2-r1*r1+r1)*r3+(one-r1)*r1*r2+r1*r1*(r1-one))
-                    !censcz_s(2,k,j)=r1*r3/((r2*r2-(r1+one)*r2+r1)*r3-r2*r2*r2+(r1+one)*r2*r2-r1*r2)
-                    !denscz_s(2,k,j)=-r1*r2/(r3*r3*r3-(r1+r2+one)*r3*r3+((r1+one)*r2+r1)*r3-r1*r2)         
-                    !=========
                     aenscz_s(2,k,j)=(s1*s2*s3)/&
                                     ((s2*(s1-s0)-s0*s1+s0*s0)*s3+(s0*s0-s0*s1)*s2+s0*s0*s1-s0*s0*s0)
                     benscz_s(2,k,j)=-(s0*s2*s3)/&
@@ -2221,7 +2067,12 @@ contains
     !!
     !!  SUBROUTINE: phiw_cht
     !!      AUTHOR: Rodrigo Vicente Cruz
-    !! DESCRIPTION: For Conjugate Heat transfer in pipe configuration
+    !! DESCRIPTION: Predicts wall temperature to be imposed at the wall for
+    !!              fluid temperature solution (iflag=1) and solid temperature
+    !!              solution. Contains:
+    !!              - Prediction of phi^(n+1): Dirichlet (iflag=1)
+    !!              - Prediction/extrapolation of tangential heat-flux component
+    !!              - Prediction of phis^(n+1): Neumann (iflag=2)
     !!
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
@@ -2938,6 +2789,13 @@ contains
   return
   !
   end subroutine derphiw_cht
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!
+    !!  SUBROUTINE: phis_condeq
+    !!      AUTHOR: Rodrigo Vicente Cruz
+    !! DESCRIPTION: Solver for heat diffusion equation in the solid domain
+    !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
   !
   subroutine phis_condeq(phis1,dphis1,is,icht)
@@ -3047,6 +2905,13 @@ contains
     enddo
 
   end subroutine phis_condeq
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!
+    !!  SUBROUTINE: lagpol*2
+    !!      AUTHOR: Rodrigo Vicente Cruz
+    !! DESCRIPTION: Reconstruction across transverse-yz domain periodicity
+    !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
   !
   subroutine lagpoly2(u)
@@ -3309,12 +3174,11 @@ contains
   end subroutine lagpolz2
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !!
-    !!  SUBROUTINE: nbclagpoly and nbclagpolz
+    !!  SUBROUTINE: nbclagpol*
     !!      AUTHOR: Rodrigo Vicente Cruz
-    !! DESCRIPTION: When Imposed Flux (Neumann) boundary conditions are used:             
-    !!              i)Performs the reconstruction ensuring a targeted value for 
-    !!                the wall derivative, i.e., the Neumann BC is ensured through
-    !!                a targeted Dirichlet BC by meand of a O3 non-centred scheme
+    !! DESCRIPTION: Performs the reconstruction ensuring a targeted value for 
+    !!              the wall derivative (Neumann BC is ensured through a
+    !!              targeted Dirichlet)
     !!
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
@@ -3445,6 +3309,122 @@ contains
     !
     return
   end subroutine nbclagpoly
+  !***************************************************************************
+  !
+  subroutine nbclagpolz(u,is)
+  !
+  !***************************************************************************
+    !
+    USE param
+    USE complex_geometry
+    USE decomp_2d
+    USE variables
+    !
+    implicit none
+    !
+    real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: u
+    integer                                            :: is
+    integer                                            :: i,j,k
+    real(mytype)                                       :: x,y,z
+    real(mytype)                                       :: yw,zw,yc,zc,theta
+    real(mytype)                                       :: wfz             ! wall flux in Z  
+    integer                                            :: kz              != position du point "zappé"
+    integer                                            :: kzs
+    integer                                            :: kpif,kpol,nzpif
+    integer                                            :: kpoli,kpolf     != positions Initiales et Finales du POLynôme considéré
+    real(mytype)                                       :: xpol,ypol,dypol !|variables concernant les polynômes
+    real(mytype),dimension(10)                         :: xa,ya           !|de Lagrange. A mettre imérativement en 
+    integer                                            :: ia,na           !|double précision
+    !
+    if (new_rec.eq.1) then
+        call nbclagpolz2(u,is)
+        return
+    endif
+    !
+    yc=yly/two
+    zc=zlz/two
+    do j=1,zsize(2)
+       do i=1,zsize(1)
+          if(nobjz(i,j).ne.0)then
+             ia=0
+             do k=1,nobjz(i,j)          !boucle sur le nombre d'objets par couple (i,j)
+                !1ère frontière
+                nzpif=npif
+                ia=ia+1
+                xa(ia)=zi(k,i,j)
+                if (nobjz(i,j).eq.2.and.k.eq.2) then
+                    ya(ia)=phiw3(1,k,i,j,is)
+                else
+                    ya(ia)=-one/nuw(is)
+                endif
+                if(zi(k,i,j).gt.0.)then!objet immergé
+                   kz=zi(k,i,j)/dz+1
+                   !====DEBUG
+                   !if (abs(zp(kz)-zi(k,i,j)).lt.tol) kz=kz-1 !use if exact_ib_pipe
+                   kpoli=kz+1
+                   if(nzipif(k,i,j).lt.npif)nzpif=nzipif(k,i,j)
+                   do kpif=1,nzpif
+                      ia=ia+1
+                      if(izap.eq.1)then!zapping
+                         xa(ia)=(kz-1)*dz-kpif*dz
+                         ya(ia)=u(i,j,kz-kpif)
+                      else             !no zapping
+                         xa(ia)=(kz-1)*dz-(kpif-1)*dz
+                         ya(ia)=u(i,j,kz-kpif+1)
+                      endif
+                   enddo
+                else                   !objet semi-immergé
+                   kpoli=1
+                endif
+                !2ème frontière
+                nzpif=npif
+                ia=ia+1
+                xa(ia)=zf(k,i,j)
+                if (nobjz(i,j).eq.2.and.k.eq.1) then
+                    ya(ia)=phiw3(2,k,i,j,is)
+                else
+                    ya(ia)=-one/nuw(is)
+                endif
+                if(zf(k,i,j).lt.zlz)then!objet immergé
+                   kz=(zf(k,i,j)+dz)/dz+1
+                   kpolf=kz-1
+                   if(nzfpif(k,i,j).lt.npif)nzpif=nzfpif(k,i,j)
+                   do kpif=1,nzpif
+                      ia=ia+1
+                      if(izap.eq.1)then!zapping
+                         xa(ia)=(kz-1)*dz+kpif*dz
+                         ya(ia)=u(i,j,kz+kpif)
+                      else             !no zapping
+                         xa(ia)=(kz-1)*dz+(kpif-1)*dz
+                         ya(ia)=u(i,j,kz+kpif-1)
+                      endif
+                   enddo
+                else                   !objet semi-immergé
+                   kpolf=nz
+                endif
+                !calcul du polynôme
+                na=ia
+                do kpol=kpoli,kpolf
+                   xpol=dz*(kpol-1)
+                   call polint(xa,ya,na,xpol,ypol,dypol)
+                   u(i,j,kpol)=ypol
+                enddo
+                ia=0
+             enddo
+          endif
+       enddo
+    enddo
+    !
+    return
+  end subroutine nbclagpolz
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!
+    !!  SUBROUTINE: nbclagpol*2
+    !!      AUTHOR: Rodrigo Vicente Cruz
+    !! DESCRIPTION: Performs Neumann reconstruction across the transverse-yz
+    !!              domain periodicity
+    !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
   !
   subroutine nbclagpoly2(u,is)
@@ -3588,114 +3568,6 @@ contains
   end subroutine nbclagpoly2
   !***************************************************************************
   !
-  subroutine nbclagpolz(u,is)
-  !
-  !***************************************************************************
-    !
-    USE param
-    USE complex_geometry
-    USE decomp_2d
-    USE variables
-    !
-    implicit none
-    !
-    real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: u
-    integer                                            :: is
-    integer                                            :: i,j,k
-    real(mytype)                                       :: x,y,z
-    real(mytype)                                       :: yw,zw,yc,zc,theta
-    real(mytype)                                       :: wfz             ! wall flux in Z  
-    integer                                            :: kz              != position du point "zappé"
-    integer                                            :: kzs
-    integer                                            :: kpif,kpol,nzpif
-    integer                                            :: kpoli,kpolf     != positions Initiales et Finales du POLynôme considéré
-    real(mytype)                                       :: xpol,ypol,dypol !|variables concernant les polynômes
-    real(mytype),dimension(10)                         :: xa,ya           !|de Lagrange. A mettre imérativement en 
-    integer                                            :: ia,na           !|double précision
-    !
-    if (new_rec.eq.1) then
-        call nbclagpolz2(u,is)
-        return
-    endif
-    !
-    yc=yly/two
-    zc=zlz/two
-    do j=1,zsize(2)
-       do i=1,zsize(1)
-          if(nobjz(i,j).ne.0)then
-             ia=0
-             do k=1,nobjz(i,j)          !boucle sur le nombre d'objets par couple (i,j)
-                !1ère frontière
-                nzpif=npif
-                ia=ia+1
-                xa(ia)=zi(k,i,j)
-                if (nobjz(i,j).eq.2.and.k.eq.2) then
-                    ya(ia)=phiw3(1,k,i,j,is)
-                else
-                    ya(ia)=-one/nuw(is)
-                endif
-                if(zi(k,i,j).gt.0.)then!objet immergé
-                   kz=zi(k,i,j)/dz+1
-                   !====DEBUG
-                   !if (abs(zp(kz)-zi(k,i,j)).lt.tol) kz=kz-1 !use if exact_ib_pipe
-                   kpoli=kz+1
-                   if(nzipif(k,i,j).lt.npif)nzpif=nzipif(k,i,j)
-                   do kpif=1,nzpif
-                      ia=ia+1
-                      if(izap.eq.1)then!zapping
-                         xa(ia)=(kz-1)*dz-kpif*dz
-                         ya(ia)=u(i,j,kz-kpif)
-                      else             !no zapping
-                         xa(ia)=(kz-1)*dz-(kpif-1)*dz
-                         ya(ia)=u(i,j,kz-kpif+1)
-                      endif
-                   enddo
-                else                   !objet semi-immergé
-                   kpoli=1
-                endif
-                !2ème frontière
-                nzpif=npif
-                ia=ia+1
-                xa(ia)=zf(k,i,j)
-                if (nobjz(i,j).eq.2.and.k.eq.1) then
-                    ya(ia)=phiw3(2,k,i,j,is)
-                else
-                    ya(ia)=-one/nuw(is)
-                endif
-                if(zf(k,i,j).lt.zlz)then!objet immergé
-                   kz=(zf(k,i,j)+dz)/dz+1
-                   kpolf=kz-1
-                   if(nzfpif(k,i,j).lt.npif)nzpif=nzfpif(k,i,j)
-                   do kpif=1,nzpif
-                      ia=ia+1
-                      if(izap.eq.1)then!zapping
-                         xa(ia)=(kz-1)*dz+kpif*dz
-                         ya(ia)=u(i,j,kz+kpif)
-                      else             !no zapping
-                         xa(ia)=(kz-1)*dz+(kpif-1)*dz
-                         ya(ia)=u(i,j,kz+kpif-1)
-                      endif
-                   enddo
-                else                   !objet semi-immergé
-                   kpolf=nz
-                endif
-                !calcul du polynôme
-                na=ia
-                do kpol=kpoli,kpolf
-                   xpol=dz*(kpol-1)
-                   call polint(xa,ya,na,xpol,ypol,dypol)
-                   u(i,j,kpol)=ypol
-                enddo
-                ia=0
-             enddo
-          endif
-       enddo
-    enddo
-    !
-    return
-  end subroutine nbclagpolz
-  !***************************************************************************
-  !
   subroutine nbclagpolz2(u,is)
   !
   !***************************************************************************
@@ -3825,12 +3697,11 @@ contains
   end subroutine nbclagpolz2
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !!
-    !!  SUBROUTINE: chtlagpoly and chtlagpolz
+    !!  SUBROUTINE: chtlagpol*
     !!      AUTHOR: Rodrigo Vicente Cruz
-    !! DESCRIPTION: When Imposed Flux (Neumann) boundary conditions are used:             
-    !!              i)Performs the reconstruction ensuring a targeted value for 
-    !!                the wall derivative, i.e., the Neumann BC is ensured through
-    !!                a targeted Dirichlet BC by meand of a O3 non-centred scheme
+    !! DESCRIPTION: When CHT BC are used, performs the reconstruction of fluid
+    !!              temperature solution by imposing phiw predicted beforehand 
+    !!              (from phiw_cht)
     !!
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
@@ -3962,6 +3833,136 @@ contains
     !
     return
   end subroutine chtlagpoly
+  !***************************************************************************
+  !
+  subroutine chtlagpolz(u,is)
+  !
+  !***************************************************************************
+    !
+    USE param
+    USE complex_geometry
+    USE decomp_2d
+    USE variables
+    !USE var, ONLY: phiw3
+    !
+    implicit none
+    !
+    real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: u
+    integer                                            :: is
+    integer                                            :: i,j,k
+    real(mytype)                                       :: x,y,z
+    real(mytype)                                       :: yw,zw,yc,zc,theta
+    real(mytype)                                       :: wfz             ! wall flux in Z  
+    integer                                            :: kz              != position du point "zappé"
+    integer                                            :: kzs
+    integer                                            :: kpif,kpol,nzpif
+    integer                                            :: kpoli,kpolf     != positions Initiales et Finales du POLynôme considéré
+    real(mytype)                                       :: xpol,ypol,dypol !|variables concernant les polynômes
+    real(mytype),dimension(10)                         :: xa,ya           !|de Lagrange. A mettre imérativement en 
+    integer                                            :: ia,na           !|double précision
+    !
+    if (new_rec.eq.1) then
+        call chtlagpolz2(u,is)
+        return
+    endif
+    !
+    yc=yly/two
+    zc=zlz/two
+    do j=1,zsize(2)
+       do i=1,zsize(1)
+          if(nobjz(i,j).ne.0)then
+             ia=0
+             do k=1,nobjz(i,j)          !boucle sur le nombre d'objets par couple (i,j)
+                !1ère frontière
+                nzpif=npif
+                ia=ia+1
+                xa(ia)=zi(k,i,j)
+                if (nobjz(i,j).eq.2.and.k.eq.2) then
+                    ya(ia)=phiw3(1,k,i,j,is)
+                else
+                    ya(ia)=-one/nuw(is)
+                endif
+                if(zi(k,i,j).gt.0.)then!objet immergé
+                   kz=zi(k,i,j)/dz+1
+                   !====DEBUG
+                   !if (abs(zp(kz)-zi(k,i,j)).lt.tol) kz=kz-1 !use if exact_ib_pipe
+                   kpoli=kz+1
+                   if(nzipif(k,i,j).lt.npif)nzpif=nzipif(k,i,j)
+                   do kpif=1,nzpif
+                      ia=ia+1
+                      if(izap.eq.1)then!zapping
+                         xa(ia)=(kz-1)*dz-kpif*dz
+                         ya(ia)=u(i,j,kz-kpif)
+                      else             !no zapping
+                         xa(ia)=(kz-1)*dz-(kpif-1)*dz
+                         ya(ia)=u(i,j,kz-kpif+1)
+                      endif
+                   enddo
+                else                   !objet semi-immergé
+                   kpoli=1
+                endif
+                !2ème frontière
+                nzpif=npif
+                ia=ia+1
+                xa(ia)=zf(k,i,j)
+                if (nobjz(i,j).eq.2.and.k.eq.1) then
+                    ya(ia)=phiw3(2,k,i,j,is)
+                else
+                    ya(ia)=-one/nuw(is)
+                endif
+                if(zf(k,i,j).lt.zlz)then!objet immergé
+                   kz=(zf(k,i,j)+dz)/dz+1
+                   kpolf=kz-1
+                   if(nzfpif(k,i,j).lt.npif)nzpif=nzfpif(k,i,j)
+                   do kpif=1,nzpif
+                      ia=ia+1
+                      if(izap.eq.1)then!zapping
+                         xa(ia)=(kz-1)*dz+kpif*dz
+                         ya(ia)=u(i,j,kz+kpif)
+                      else             !no zapping
+                         xa(ia)=(kz-1)*dz+(kpif-1)*dz
+                         ya(ia)=u(i,j,kz+kpif-1)
+                      endif
+                   enddo
+                else                   !objet semi-immergé
+                   kpolf=nz
+                endif
+                !calcul du polynôme
+                na=ia
+                do kpol=kpoli,kpolf
+                   xpol=dz*(kpol-1)
+                   call polint(xa,ya,na,xpol,ypol,dypol)
+                   u(i,j,kpol)=ypol
+                enddo
+                !!====DEBUG Z
+                !!if (itime.eq.ilast) then
+                !    if (zstart(1)+i-1.eq.nx/2+1.and.zstart(2)+j-1.eq.120) then
+                !        !do kk=1,zsize(3)
+                !        !    print*,'u_z:' ,(kk-1)*dz,u(i,j,kk)
+                !        !enddo
+                !        do ia=1,na
+                !            print*,'z:xa,ya:',xa(ia),ya(ia)
+                !        enddo
+                !    endif
+                !    !stop
+                !!endif
+                !!====
+                ia=0
+             enddo
+          endif
+       enddo
+    enddo
+    !
+    return
+  end subroutine chtlagpolz
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!
+    !!  SUBROUTINE: chtlagpol*2
+    !!      AUTHOR: Rodrigo Vicente Cruz
+    !! DESCRIPTION: Performs CHT reconstruction across transverse-yz domain
+    !!              periodicity
+    !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
   !
   subroutine chtlagpoly2(u,is)
@@ -4103,6 +4104,148 @@ contains
   end subroutine chtlagpoly2
   !***************************************************************************
   !
+  subroutine chtlagpolz2(u,is)
+  !
+  !***************************************************************************
+    !
+    USE param
+    USE complex_geometry
+    USE decomp_2d
+    USE variables
+    !USE var, ONLY: phiw3
+    !
+    implicit none
+    !
+    real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: u
+    integer                                            :: is
+    integer                                            :: i,j,k
+    real(mytype)                                       :: x,y,z
+    real(mytype)                                       :: yw,zw,yc,zc,theta
+    real(mytype)                                       :: wfz             ! wall flux in Z  
+    integer                                            :: kz              != position du point "zappé"
+    integer                                            :: kzs
+    integer                                            :: kpif,kpol,nzpif
+    integer                                            :: kpoli,kpolf     != positions Initiales et Finales du POLynôme considéré
+    integer                                            :: nzd,km
+    real(mytype)                                       :: xpol,ypol,dypol !|variables concernant les polynômes
+    real(mytype)                                       :: zd
+    real(mytype),dimension(10)                         :: xa,ya           !|de Lagrange. A mettre imérativement en 
+    integer                                            :: ia,na           !|double précision
+    integer                                            :: kk
+    !
+    yc=yly/two
+    zc=zlz/two
+    do j=1,zsize(2)
+        do i=1,zsize(1)
+            !if(nobjz(i,j).ne.0)then
+            if(nobjz(i,j).eq.2)then
+                ia=0
+                do k=1,nobjz(i,j)          !boucle sur le nombre d'objets par couple (i,j)
+                    !1ère frontière
+                    if (k.eq.2) then !reconstruction par periodicite
+                        nzpif=npif
+                        ia=ia+1
+                        xa(ia)=zi(k,i,j)
+                        zd=zlz
+                        nzd=nz
+                        xa(ia)=xa(ia)-zd
+                        ya(ia)=phiw3(1,k,i,j,is)
+                        if(zi(k,i,j).gt.0.)then!objet immergé
+                            kz=zi(k,i,j)/dz+1
+                            !====DEBUG
+                            !if (abs(zp(kz)-zi(k,i,j)).lt.tol) kz=kz-1 !use if exact_ib_pipe
+                            kpoli=kz+1
+                            kpoli=kpoli-nzd
+                            if(nzipif(k,i,j).lt.npif) nzpif=nzipif(k,i,j)
+                            do kpif=1,nzpif
+                               ia=ia+1
+                               if(izap.eq.1)then!zapping
+                                  xa(ia)=(kz-1)*dz-kpif*dz
+                                  ya(ia)=u(i,j,kz-kpif)
+                               else             !no zapping
+                                  xa(ia)=(kz-1)*dz-(kpif-1)*dz
+                                  ya(ia)=u(i,j,kz-kpif+1)
+                               endif
+                               xa(ia)=xa(ia)-zd
+                            enddo
+                        else                   !objet semi-immergé
+                            kpoli=1
+                        endif
+                    endif
+                    !2ème frontière
+                    if (k.eq.1) then
+                        nzpif=npif
+                        ia=ia+1
+                        xa(ia)=zf(k,i,j)
+                        ya(ia)=phiw3(2,k,i,j,is)
+                        if(zf(k,i,j).lt.zlz)then !objet immergé
+                           kz=(zf(k,i,j)+dz)/dz+1
+                           kpolf=kz-1
+                           if(nzfpif(k,i,j).lt.npif)nzpif=nzfpif(k,i,j)
+                           do kpif=1,nzpif
+                              ia=ia+1
+                              if(izap.eq.1)then!zapping
+                                 xa(ia)=(kz-1)*dz+kpif*dz
+                                 ya(ia)=u(i,j,kz+kpif)
+                              else             !no zapping
+                                 xa(ia)=(kz-1)*dz+(kpif-1)*dz
+                                 ya(ia)=u(i,j,kz+kpif-1)
+                              endif
+                           enddo
+                        else                   !objet semi-immergé
+                           kpolf=nz
+                        endif
+                    endif
+                enddo
+                !calcul du polynôme
+                na=ia
+                do kpol=kpoli,kpolf
+                    xpol=dz*(kpol-1)
+                    call polint(xa,ya,na,xpol,ypol,dypol)
+                    if (kpoli.lt.0.and.kpol.le.0) then
+                        km=kpol+nzd
+                        u(i,j,km)=ypol
+                    else
+                        u(i,j,kpol)=ypol
+                    endif
+                enddo
+                !!====DEBUG Z
+                !if (is.eq.1.and.itime.eq.30) then
+                !    if (zstart(1)+i-1.eq.nx/2+1.and.zstart(2)+j-1.eq.nz/2+1) then
+                !        do kk=1,zsize(3)
+                !            print*,'phiz:' ,(kk-1)*dz,u(i,j,kk),itime
+                !        enddo
+                !        do ia=1,na
+                !            print*,'z:xa,ya:',xa(ia),ya(ia),itime
+                !        enddo
+                !    endif
+                !    !stop
+                !endif
+                !!====
+                ia=0
+            else
+                do k=1,zsize(3)
+                    u(i,j,k)=-one/nuw(is)
+                enddo
+            endif
+        enddo
+    enddo
+    !!====DEBUG Z
+    !if (itime.eq.1) stop
+    !
+    return
+  end subroutine chtlagpolz2
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!
+    !!  SUBROUTINE: chtlagpol*_s
+    !!      AUTHOR: Rodrigo Vicente Cruz
+    !! DESCRIPTION: When CHT BC are used, performs the reconstruction of solid
+    !!              temperture solution by imposing phiw predicted beforehand 
+    !!              (from phiw_cht)
+    !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !***************************************************************************
+  !
   subroutine chtlagpoly_s(u,icht) !Solid field | By: Rodrigo Vicente Cruz
   !
   !***************************************************************************
@@ -4238,261 +4381,6 @@ contains
   end subroutine chtlagpoly_s
   !***************************************************************************
   !
-  subroutine chtlagpolz(u,is)
-  !
-  !***************************************************************************
-    !
-    USE param
-    USE complex_geometry
-    USE decomp_2d
-    USE variables
-    !USE var, ONLY: phiw3
-    !
-    implicit none
-    !
-    real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: u
-    integer                                            :: is
-    integer                                            :: i,j,k
-    real(mytype)                                       :: x,y,z
-    real(mytype)                                       :: yw,zw,yc,zc,theta
-    real(mytype)                                       :: wfz             ! wall flux in Z  
-    integer                                            :: kz              != position du point "zappé"
-    integer                                            :: kzs
-    integer                                            :: kpif,kpol,nzpif
-    integer                                            :: kpoli,kpolf     != positions Initiales et Finales du POLynôme considéré
-    real(mytype)                                       :: xpol,ypol,dypol !|variables concernant les polynômes
-    real(mytype),dimension(10)                         :: xa,ya           !|de Lagrange. A mettre imérativement en 
-    integer                                            :: ia,na           !|double précision
-    !
-    if (new_rec.eq.1) then
-        call chtlagpolz2(u,is)
-        return
-    endif
-    !
-    yc=yly/two
-    zc=zlz/two
-    do j=1,zsize(2)
-       do i=1,zsize(1)
-          if(nobjz(i,j).ne.0)then
-             ia=0
-             do k=1,nobjz(i,j)          !boucle sur le nombre d'objets par couple (i,j)
-                !1ère frontière
-                nzpif=npif
-                ia=ia+1
-                xa(ia)=zi(k,i,j)
-                if (nobjz(i,j).eq.2.and.k.eq.2) then
-                    ya(ia)=phiw3(1,k,i,j,is)
-                else
-                    ya(ia)=-one/nuw(is)
-                endif
-                if(zi(k,i,j).gt.0.)then!objet immergé
-                   kz=zi(k,i,j)/dz+1
-                   !====DEBUG
-                   !if (abs(zp(kz)-zi(k,i,j)).lt.tol) kz=kz-1 !use if exact_ib_pipe
-                   kpoli=kz+1
-                   if(nzipif(k,i,j).lt.npif)nzpif=nzipif(k,i,j)
-                   do kpif=1,nzpif
-                      ia=ia+1
-                      if(izap.eq.1)then!zapping
-                         xa(ia)=(kz-1)*dz-kpif*dz
-                         ya(ia)=u(i,j,kz-kpif)
-                      else             !no zapping
-                         xa(ia)=(kz-1)*dz-(kpif-1)*dz
-                         ya(ia)=u(i,j,kz-kpif+1)
-                      endif
-                   enddo
-                else                   !objet semi-immergé
-                   kpoli=1
-                endif
-                !2ème frontière
-                nzpif=npif
-                ia=ia+1
-                xa(ia)=zf(k,i,j)
-                if (nobjz(i,j).eq.2.and.k.eq.1) then
-                    ya(ia)=phiw3(2,k,i,j,is)
-                else
-                    ya(ia)=-one/nuw(is)
-                endif
-                if(zf(k,i,j).lt.zlz)then!objet immergé
-                   kz=(zf(k,i,j)+dz)/dz+1
-                   kpolf=kz-1
-                   if(nzfpif(k,i,j).lt.npif)nzpif=nzfpif(k,i,j)
-                   do kpif=1,nzpif
-                      ia=ia+1
-                      if(izap.eq.1)then!zapping
-                         xa(ia)=(kz-1)*dz+kpif*dz
-                         ya(ia)=u(i,j,kz+kpif)
-                      else             !no zapping
-                         xa(ia)=(kz-1)*dz+(kpif-1)*dz
-                         ya(ia)=u(i,j,kz+kpif-1)
-                      endif
-                   enddo
-                else                   !objet semi-immergé
-                   kpolf=nz
-                endif
-                !calcul du polynôme
-                na=ia
-                do kpol=kpoli,kpolf
-                   xpol=dz*(kpol-1)
-                   call polint(xa,ya,na,xpol,ypol,dypol)
-                   u(i,j,kpol)=ypol
-                enddo
-                !!====DEBUG Z
-                !!if (itime.eq.ilast) then
-                !    if (zstart(1)+i-1.eq.nx/2+1.and.zstart(2)+j-1.eq.120) then
-                !        !do kk=1,zsize(3)
-                !        !    print*,'u_z:' ,(kk-1)*dz,u(i,j,kk)
-                !        !enddo
-                !        do ia=1,na
-                !            print*,'z:xa,ya:',xa(ia),ya(ia)
-                !        enddo
-                !    endif
-                !    !stop
-                !!endif
-                !!====
-                ia=0
-             enddo
-          endif
-       enddo
-    enddo
-    !
-    return
-  end subroutine chtlagpolz
-  !***************************************************************************
-  !
-  subroutine chtlagpolz2(u,is)
-  !
-  !***************************************************************************
-    !
-    USE param
-    USE complex_geometry
-    USE decomp_2d
-    USE variables
-    !USE var, ONLY: phiw3
-    !
-    implicit none
-    !
-    real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: u
-    integer                                            :: is
-    integer                                            :: i,j,k
-    real(mytype)                                       :: x,y,z
-    real(mytype)                                       :: yw,zw,yc,zc,theta
-    real(mytype)                                       :: wfz             ! wall flux in Z  
-    integer                                            :: kz              != position du point "zappé"
-    integer                                            :: kzs
-    integer                                            :: kpif,kpol,nzpif
-    integer                                            :: kpoli,kpolf     != positions Initiales et Finales du POLynôme considéré
-    integer                                            :: nzd,km
-    real(mytype)                                       :: xpol,ypol,dypol !|variables concernant les polynômes
-    real(mytype)                                       :: zd
-    real(mytype),dimension(10)                         :: xa,ya           !|de Lagrange. A mettre imérativement en 
-    integer                                            :: ia,na           !|double précision
-    integer                                            :: kk
-    !
-    yc=yly/two
-    zc=zlz/two
-    do j=1,zsize(2)
-        do i=1,zsize(1)
-            !if(nobjz(i,j).ne.0)then
-            if(nobjz(i,j).eq.2)then
-                ia=0
-                do k=1,nobjz(i,j)          !boucle sur le nombre d'objets par couple (i,j)
-                    !1ère frontière
-                    if (k.eq.2) then !reconstruction par periodicite
-                        nzpif=npif
-                        ia=ia+1
-                        xa(ia)=zi(k,i,j)
-                        zd=zlz
-                        nzd=nz
-                        xa(ia)=xa(ia)-zd
-                        ya(ia)=phiw3(1,k,i,j,is)
-                        if(zi(k,i,j).gt.0.)then!objet immergé
-                            kz=zi(k,i,j)/dz+1
-                            !====DEBUG
-                            !if (abs(zp(kz)-zi(k,i,j)).lt.tol) kz=kz-1 !use if exact_ib_pipe
-                            kpoli=kz+1
-                            kpoli=kpoli-nzd
-                            if(nzipif(k,i,j).lt.npif) nzpif=nzipif(k,i,j)
-                            do kpif=1,nzpif
-                               ia=ia+1
-                               if(izap.eq.1)then!zapping
-                                  xa(ia)=(kz-1)*dz-kpif*dz
-                                  ya(ia)=u(i,j,kz-kpif)
-                               else             !no zapping
-                                  xa(ia)=(kz-1)*dz-(kpif-1)*dz
-                                  ya(ia)=u(i,j,kz-kpif+1)
-                               endif
-                               xa(ia)=xa(ia)-zd
-                            enddo
-                        else                   !objet semi-immergé
-                            kpoli=1
-                        endif
-                    endif
-                    !2ème frontière
-                    if (k.eq.1) then
-                        nzpif=npif
-                        ia=ia+1
-                        xa(ia)=zf(k,i,j)
-                        ya(ia)=phiw3(2,k,i,j,is)
-                        if(zf(k,i,j).lt.zlz)then !objet immergé
-                           kz=(zf(k,i,j)+dz)/dz+1
-                           kpolf=kz-1
-                           if(nzfpif(k,i,j).lt.npif)nzpif=nzfpif(k,i,j)
-                           do kpif=1,nzpif
-                              ia=ia+1
-                              if(izap.eq.1)then!zapping
-                                 xa(ia)=(kz-1)*dz+kpif*dz
-                                 ya(ia)=u(i,j,kz+kpif)
-                              else             !no zapping
-                                 xa(ia)=(kz-1)*dz+(kpif-1)*dz
-                                 ya(ia)=u(i,j,kz+kpif-1)
-                              endif
-                           enddo
-                        else                   !objet semi-immergé
-                           kpolf=nz
-                        endif
-                    endif
-                enddo
-                !calcul du polynôme
-                na=ia
-                do kpol=kpoli,kpolf
-                    xpol=dz*(kpol-1)
-                    call polint(xa,ya,na,xpol,ypol,dypol)
-                    if (kpoli.lt.0.and.kpol.le.0) then
-                        km=kpol+nzd
-                        u(i,j,km)=ypol
-                    else
-                        u(i,j,kpol)=ypol
-                    endif
-                enddo
-                !!====DEBUG Z
-                !if (is.eq.1.and.itime.eq.30) then
-                !    if (zstart(1)+i-1.eq.nx/2+1.and.zstart(2)+j-1.eq.nz/2+1) then
-                !        do kk=1,zsize(3)
-                !            print*,'phiz:' ,(kk-1)*dz,u(i,j,kk),itime
-                !        enddo
-                !        do ia=1,na
-                !            print*,'z:xa,ya:',xa(ia),ya(ia),itime
-                !        enddo
-                !    endif
-                !    !stop
-                !endif
-                !!====
-                ia=0
-            else
-                do k=1,zsize(3)
-                    u(i,j,k)=-one/nuw(is)
-                enddo
-            endif
-        enddo
-    enddo
-    !!====DEBUG Z
-    !if (itime.eq.1) stop
-    !
-    return
-  end subroutine chtlagpolz2
-  !***************************************************************************
-  !
   subroutine chtlagpolz_s(u,icht) !Solid field | By: Rodrigo Vicente Cruz
   !
   !***************************************************************************
@@ -4613,6 +4501,13 @@ contains
     !
     return
   end subroutine chtlagpolz_s
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!
+    !!  SUBROUTINE: axial_averaging
+    !!      AUTHOR: Rodrigo Vicente Cruz
+    !! DESCRIPTION: Performs axial averaging (streamwise-x direction)
+    !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !***************************************************************************
   !
   subroutine axial_averaging(var)
