@@ -182,6 +182,7 @@ subroutine genepsi3d(ep1)
   !
   real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ep1
   !
+  if (nrank==0) print *,' '
   if (nrank==0) print *,'Generating the geometry!'
   call gene_epsi_3D(ep1,nx,ny,nz,dx,dy,dz,xlx,yly,zlz ,&
        nclx,ncly,nclz,nxraf,nyraf,nzraf   ,&
@@ -1026,11 +1027,13 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   integer                            :: npif
   integer                            :: i,j,k,count
   !
+  if (nrank==0) call system('mkdir geomcomplex 2> /dev/null')
+  !
   if (nrank==0) print *,'Writing geometry'
-  call decomp_2d_write_one(1,ep1,'epsilon.dat')
-  if (iepm.eq.1) call decomp_2d_write_one(1,epm,'epsilonm.dat')
+  call decomp_2d_write_one(1,ep1,'geomcomplex/epsilon.dat')
+  if (iepm.eq.1) call decomp_2d_write_one(1,epm,'geomcomplex/epsilonm.dat')
   !x-pencil
-  open(67,file='nobjx.dat',form='formatted',access='direct',recl=13)
+  open(67,file='geomcomplex/nobjx.dat',form='formatted',access='direct',recl=13)
   do k=xstart(3),xend(3)
      do j=xstart(2),xend(2)
         count = (k-1)*ny+j
@@ -1039,7 +1042,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !y-pencil
-  open(67,file='nobjy.dat',form='formatted',access='direct',recl=13)
+  open(67,file='geomcomplex/nobjy.dat',form='formatted',access='direct',recl=13)
   do k=ystart(3),yend(3)
      do i=ystart(1),yend(1)
         count = (k-1)*nx+i
@@ -1048,7 +1051,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !z-pencil
-  open(67,file='nobjz.dat',form='formatted',access='direct',recl=13)
+  open(67,file='geomcomplex/nobjz.dat',form='formatted',access='direct',recl=13)
   do j=zstart(2),zend(2)
      do i=zstart(1),zend(1)
         count = (j-1)*nx+i
@@ -1057,7 +1060,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !x-pencil
-  open(67,file='nxifpif.dat',form='formatted',access='direct',recl=25)
+  open(67,file='geomcomplex/nxifpif.dat',form='formatted',access='direct',recl=25)
   do k=xstart(3),xend(3)
      do j=xstart(2),xend(2)
         do i=0,nobjmax
@@ -1068,7 +1071,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !y-pencil
-  open(67,file='nyifpif.dat',form='formatted',access='direct',recl=25)
+  open(67,file='geomcomplex/nyifpif.dat',form='formatted',access='direct',recl=25)
   do k=ystart(3),yend(3)
      do i=ystart(1),yend(1)
         do j=0,nobjmax
@@ -1079,7 +1082,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !z-pencil
-  open(67,file='nzifpif.dat',form='formatted',access='direct',recl=25)
+  open(67,file='geomcomplex/nzifpif.dat',form='formatted',access='direct',recl=25)
   do j=zstart(2),zend(2)
      do i=zstart(1),zend(1)
         do k=0,nobjmax
@@ -1090,7 +1093,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !x-pencil
-  open(67,file='xixf.dat',form='formatted',access='direct',recl=29)
+  open(67,file='geomcomplex/xixf.dat',form='formatted',access='direct',recl=29)
   do k=xstart(3),xend(3)
      do j=xstart(2),xend(2)
         do i=1,nobjmax
@@ -1101,7 +1104,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !y-pencil
-  open(67,file='yiyf.dat',form='formatted',access='direct',recl=29)
+  open(67,file='geomcomplex/yiyf.dat',form='formatted',access='direct',recl=29)
   do k=ystart(3),yend(3)
      do i=ystart(1),yend(1)
         do j=1,nobjmax
@@ -1112,7 +1115,7 @@ subroutine write_geomcomplex(nx,ny,nz,ep1,epm,nobjx,nobjy,nobjz,xi,xf,yi,yf,zi,z
   enddo
   close(67)
   !z-pencil
-  open(67,file='zizf.dat',form='formatted',access='direct',recl=29)
+  open(67,file='geomcomplex/zizf.dat',form='formatted',access='direct',recl=29)
   do j=zstart(2),zend(2)
      do i=zstart(1),zend(1)
         do k=1,nobjmax
@@ -1137,7 +1140,7 @@ subroutine read_geomcomplex()
   integer :: code
   !
   if(nrank.eq.0)then
-     open(11,file='nobjx.dat'  ,form='formatted', status='old')
+     open(11,file='geomcomplex/nobjx.dat'  ,form='formatted', status='old')
      do k=1,nz
         do j=1,ny
            read(11,*)nobjx(j,k)
@@ -1147,7 +1150,7 @@ subroutine read_geomcomplex()
   endif
   call MPI_BCAST(nobjx,ny*nz,MPI_INTEGER,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(12,file='nobjy.dat'  ,form='formatted', status='old')
+     open(12,file='geomcomplex/nobjy.dat'  ,form='formatted', status='old')
      do k=1,nz
         do i=1,nx
            read(12,*)nobjy(i,k)
@@ -1157,7 +1160,7 @@ subroutine read_geomcomplex()
   endif
   call MPI_BCAST(nobjy,nx*nz,MPI_INTEGER,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(13,file='nobjz.dat'  ,form='formatted', status='old')
+     open(13,file='geomcomplex/nobjz.dat'  ,form='formatted', status='old')
      do j=1,ny
         do i=1,nx
            read(13,*)nobjz(i,j)
@@ -1167,7 +1170,7 @@ subroutine read_geomcomplex()
   endif
   call MPI_BCAST(nobjz,nx*ny,MPI_INTEGER,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(21,file='nxifpif.dat',form='formatted', status='old')
+     open(21,file='geomcomplex/nxifpif.dat',form='formatted', status='old')
      do k=1,nz
         do j=1,ny
            do i=0,nobjmax
@@ -1180,7 +1183,7 @@ subroutine read_geomcomplex()
   call MPI_BCAST(nxipif,ny*nz*(nobjmax+1),MPI_INTEGER,0,MPI_COMM_WORLD,code)
   call MPI_BCAST(nxfpif,ny*nz*(nobjmax+1),MPI_INTEGER,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(22,file='nyifpif.dat',form='formatted', status='old')
+     open(22,file='geomcomplex/nyifpif.dat',form='formatted', status='old')
      do k=1,nz
         do i=1,nx
            do j=0,nobjmax
@@ -1193,7 +1196,7 @@ subroutine read_geomcomplex()
   call MPI_BCAST(nyipif,nx*nz*(nobjmax+1),MPI_INTEGER,0,MPI_COMM_WORLD,code)
   call MPI_BCAST(nyfpif,nx*nz*(nobjmax+1),MPI_INTEGER,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(23,file='nzifpif.dat',form='formatted', status='old')
+     open(23,file='geomcomplex/nzifpif.dat',form='formatted', status='old')
      do j=1,ny
         do i=1,nx
            do k=0,nobjmax
@@ -1206,7 +1209,7 @@ subroutine read_geomcomplex()
   call MPI_BCAST(nzipif,nx*ny*(nobjmax+1),MPI_INTEGER,0,MPI_COMM_WORLD,code)
   call MPI_BCAST(nzfpif,nx*ny*(nobjmax+1),MPI_INTEGER,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(31,file='xixf.dat'   ,form='formatted', status='old')
+     open(31,file='geomcomplex/xixf.dat'   ,form='formatted', status='old')
      do k=1,nz
         do j=1,ny
            do i=1,nobjmax
@@ -1219,7 +1222,7 @@ subroutine read_geomcomplex()
   call MPI_BCAST(xi,ny*nz*nobjmax,MPI_REAL,0,MPI_COMM_WORLD,code)
   call MPI_BCAST(xf,ny*nz*nobjmax,MPI_REAL,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(32,file='yiyf.dat'   ,form='formatted', status='old')
+     open(32,file='geomcomplex/yiyf.dat'   ,form='formatted', status='old')
      do k=1,nz
         do i=1,nx
            do j=1,nobjmax
@@ -1232,7 +1235,7 @@ subroutine read_geomcomplex()
   call MPI_BCAST(yi,nx*nz*nobjmax,MPI_REAL,0,MPI_COMM_WORLD,code)
   call MPI_BCAST(yf,nx*nz*nobjmax,MPI_REAL,0,MPI_COMM_WORLD,code)
   if(nrank.eq.0)then
-     open(33,file='zizf.dat'   ,form='formatted', status='old')
+     open(33,file='geomcomplex/zizf.dat'   ,form='formatted', status='old')
      do j=1,ny
         do i=1,nx
            do k=1,nobjmax

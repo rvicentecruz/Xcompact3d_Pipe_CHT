@@ -584,18 +584,17 @@ subroutine second_derivative(alsa1,as1,bs1,&
 
   !====Debug
   if (nrank==0.and.ivf.eq.0) then
-     write(*,*) '========================================'
-     write(*,*) '       2nd Derivative Coefficients      '
-     write(*,*) 'c1   =', cnu
-     write(*,*) 'nu0nu=',nu0nu
-     write(*,*) "kc'' =", kppkc
-     write(*,*) "km'' =", kppkm
+     write(*,*) '----------------------------------------'
+     write(*,*) '       2nd derivative coefficients      '
+     !write(*,*) 'c1   =', cnu
+     !write(*,*) 'nu0nu=',nu0nu
+     !write(*,*) "kc'' =", kppkc
+     !write(*,*) "km'' =", kppkm
      write(*,*) alsai
      write(*,*) asi*d2
      write(*,*) bsi*4.*d2
      write(*,*) csi*9.*d2
      write(*,*) dsi*16.*d2
-     write(*,*) '========================================'
   endif
 
   ! Defined for the bounadies when dirichlet conditions are used
@@ -1061,23 +1060,22 @@ subroutine set_viscfilter_coefficients(fval,fva,fvb,fvc,fvd,&
       fve=fve*zpfive
     endif
     if (nrank==0.and.ivf.ne.0) then
-       write(*,*) '========================================'
-       write(*,*) '           Filter Coefficients          '
-       write(*,*) 'fo=', fo
-       write(*,*) 'c1=', c1
-       write(*,*) 'tc=', tc
-       write(*,*) 'tm=', tm
-       write(*,*) 'xkc=', xkc
-       write(*,*) 'xkm=', xkm
-       write(*,*) 'pi =', pi
-       write(*,*) 'nu0snu=',nu0snu
+       write(*,*) '----------------------------------------'
+       write(*,*) '       Viscous Filter coefficients      '
+       write(*,*) 'Fourier=', fo
+       !write(*,*) 'c1=', c1
+       !write(*,*) 'tc=', tc
+       !write(*,*) 'tm=', tm
+       !write(*,*) 'xkc=', xkc
+       !write(*,*) 'xkm=', xkm
+       !write(*,*) 'pi =', pi
+       write(*,*) 'nu0nu  =',nu0snu
        write(*,*) fval 
        write(*,*) fva 
        write(*,*) two*fvb 
        write(*,*) two*fvc 
        write(*,*) two*fvd 
        write(*,*) two*fve 
-       write(*,*) '========================================'
     endif
 
     if (ncl1.ne.0) then

@@ -750,7 +750,8 @@ contains
 
     if (iscalar.eq.0) return
 
-255 format('Tb_correc_',I2.2,'.dat')
+!255 format('Tb_correc_',I2.2,'.dat')
+255 format('Tb_',I2.2,'.dat')
 256 format(' Scalar:                       #',I2)
 
     ifile=50+is
