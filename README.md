@@ -1,6 +1,6 @@
 ## WARNING
 
-This is a branch of the code aiming mainly [Viscous Filtering](https://doi.org/10.1016/j.jcp.2021.110115) and [Conjugate Heat Transfer](https://www.theses.fr/2021POIT2302) applications in Turbulent Pipe Flow. To access the main branch of the code, [click here](https://github.com/xcompact3d).
+This is a branch of the code aiming mainly [Viscous Filtering](https://doi.org/10.1016/j.jcp.2021.110115) and [Conjugate Heat Transfer](https://hal.science/tel-03605404/) applications in Turbulent Pipe Flow. To access the main branch of the code, [click here](https://github.com/xcompact3d).
 
 
 ## The Xcompact3d code
