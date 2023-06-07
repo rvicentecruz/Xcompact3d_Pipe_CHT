@@ -1,6 +1,6 @@
 ## WARNING
 
-This is a branch of the code aiming mainly [Viscous Filtering](https://doi.org/10.1016/j.jcp.2021.110115) and [Conjugate Heat Transfer](https://www.theses.fr/2021POIT2302) applications in Turbulent Pipe Flow. To access the main branch of the code, [click here](https://github.com/xcompact3d).
+This is a branch of the code aiming mainly [Viscous Filtering](https://doi.org/10.1016/j.jcp.2021.110115) and [Conjugate Heat Transfer](https://doi.org/10.1016/j.jcp.2023.112182) applications in Turbulent Pipe Flow. To access the main branch of the code, [click here](https://github.com/xcompact3d).
 
 
 ## The Xcompact3d code
@@ -16,7 +16,7 @@ This is a branch of Xcompact3d for Direct and Large Eddy Simulation (DNS/LES) in
 
 **[1]** R. Vicente Cruz, ‘High-fidelity simulation of conjugate heat transfer between a turbulent flow and a duct geometry’, Université de Poitiers, 2021. [Online]. Available: [https://inria.hal.science/tel-03605404/](https://inria.hal.science/tel-03605404/)
 
-**[2]** R. Vicente Cruz and E. Lamballais, ‘A Versatile Immersed Boundary Method for High-Fidelity Simulation of Conjugate Heat Transfer’, Journal of Computational Physics, [Accepted].
+**[2]** R. Vicente Cruz and E. Lamballais, ‘A Versatile Immersed Boundary Method for High-Fidelity Simulation of Conjugate Heat Transfer’, Journal of Computational Physics, 2023, [doi: 10.1016/j.jcp.2023.112182](https://doi.org/10.1016/j.jcp.2023.112182).
 
 **[3]** E. Lamballais, R. Vicente Cruz, and R. Perrin, ‘Viscous and hyperviscous filtering for direct and large-eddy simulation’, Journal of Computational Physics, vol. 431, p. 110115, Apr. 2021, [doi: 10.1016/j.jcp.2021.110115.](https://doi.org/10.1016/j.jcp.2021.110115)
 
