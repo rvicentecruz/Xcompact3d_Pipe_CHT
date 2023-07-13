@@ -989,7 +989,8 @@ subroutine set_viscfilter_coefficients(fval,fva,fvb,fvc,fvd,&
    c1=cn
    !Equivalent of DNS kernel in extended stencil (hyperviscous formulation)
    if (ilesmod.eq.0.and.nu0snu.eq.three) then
-       c1=exp(-((pi-two*pi/three)/(zpthree*pi-two*pi/three))**two)   
+       %c1=exp(-((pi-two*pi/three)/(zpthree*pi-two*pi/three))**two)
+			 c1=0.44
        c1=c1/twelve                         
    endif
 
