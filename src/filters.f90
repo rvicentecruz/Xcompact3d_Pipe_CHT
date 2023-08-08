@@ -257,6 +257,7 @@ USE viscfiX
 USE viscfiY 
 USE viscfiZ 
 USE var, ONLY : ta1,tb1,ta2,tb2,ta3,tb3,di1,di2,di3
+USE var, ONLY : phi1,phis1,ep1
 USE pipe
 
     implicit none
@@ -265,7 +266,6 @@ USE pipe
     integer                                             :: ilag !0: with lagpol
                                                                 !1: with nbclagpol/chtlagpol
     integer                                             :: icht,is
-    !====DEBUG
     integer                                             :: i,j,k
 
     tb1(:,:,:) = var1(:,:,:)
@@ -293,6 +293,14 @@ USE pipe
         !To avoid Dirichlet reconstruction
         if (itype.eq.itype_pipe.and.itbc(ifilt).ne.1.and.ilag.eq.1) then 
             iibm=0
+            !
+            !Predict phiw^(n+1) (fluid)
+            if (itbc(ifilt).eq.2) then !Treatment IF boundary condition
+                call phiw_if(tb1,ep1,ifilt,0)
+            elseif (itbc(ifilt).eq.3) then !Treatment CHT boundary condition (fluid)
+                icht=icht+1
+                call phiw_cht(tb1,phis1(:,:,:,icht),ep1,ifilt,icht,1,0)
+            endif
         endif
 
         !X PENCIL
@@ -340,6 +348,9 @@ USE pipe
         enddo
 
         iibm=0
+        !Predict phiws^(n+1)
+        call phiw_cht(phi1(:,:,:,-ifilt),tb1,ep1,-ifilt,icht,2,0)
+
         !X PENCIL
         call filxxS(ta1,tb1,di1,fscalx_s(-ifilt),fscaix_s(-ifilt),fscbix_s(-ifilt),fsccix_s(-ifilt),&
                    fscdix_s(-ifilt),fsceix_s(-ifilt),sx,vscfx_s(:,-ifilt),vscsx_s(:,-ifilt),vscwx_s(:,-ifilt),&
@@ -350,39 +361,12 @@ USE pipe
         call filyyS(ta2,tb2,di2,fscaly_s(-ifilt),fscajy_s(-ifilt),fscbjy_s(-ifilt),fsccjy_s(-ifilt),&
                    fscdjy_s(-ifilt),fscejy_s(-ifilt),sy,vscfy_s(:,-ifilt),vscsy_s(:,-ifilt),vscwy_s(:,-ifilt),&
                    ysize(1),ysize(2),ysize(3),0)
-        !!====DEBUG
-        !if (is.eq.5.and.itime.eq.ifirst+1) then
-        !    do i=1,ysize(1)
-        !        do k=1,ysize(3)
-        !            if (ystart(1)+i-1.eq.nx/2+1.and.ystart(3)+k-1.eq.nz/2+1) then
-        !                do j=1,ysize(2)
-        !                    !print*,'phis_fily:' ,yp(j),ta2(i,j,k)
-        !                    print*,'phis_fily:' ,yp(j),tb2(i,j,k)
-        !                enddo
-        !            endif
-        !        enddo
-        !    enddo
-        !    stop
-        !endif
-        !!====
         call transpose_y_to_z(ta2,tb3)
         !Z PENCIL
         call chtlagpolz_s(tb3,icht)
         call filzzS(ta3,tb3,di3,fscalz_s(-ifilt),fscakz_s(-ifilt),fscbkz_s(-ifilt),fscckz_s(-ifilt),&
                    fscdkz_s(-ifilt),fscekz_s(-ifilt),sz,vscfz_s(:,-ifilt),vscsz_s(:,-ifilt),vscwz_s(:,-ifilt),&
                    zsize(1),zsize(2),zsize(3),0)
-        !!====DEBUG
-        !do i=1,zsize(1)
-        !    do j=1,zsize(2)
-        !        if (zstart(1)+i-1.eq.nx/2+1.and.zstart(2)+j-1.eq.ny/2+1) then
-        !            do k=1,zsize(3)
-        !                print*,'phis_filz:' ,(k-1)*dz,ta3(i,j,k)
-        !            enddo
-        !        endif
-        !    enddo
-        !enddo
-        !stop
-        !!====
         iibm=2
         !BACK TO X Pencil
         call transpose_z_to_y(ta3,ta2)
