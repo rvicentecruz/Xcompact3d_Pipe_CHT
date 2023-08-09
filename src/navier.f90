@@ -498,6 +498,9 @@ contains
     call MPI_CART_GET(DECOMP_2D_COMM_CART_X, 2, dims, dummy_periods, dummy_coords, code)
 
     if (itype.eq.itype_pipe) then
+        !Bulk velocity correction
+        call pipe_flrt(ux1,uy1,uz1,ep1,one)
+
         !Bulk temperature correction
         icht=0
         do is=1,numscalar
@@ -508,9 +511,6 @@ contains
                 call phis_condeq(phis1(:,:,:,icht),dphis1(:,:,:,:,icht),is,icht)
             endif
         enddo
-
-        !Bulk velocity correction
-        call pipe_flrt(ux1,uy1,uz1,ep1,one)
 
         !If one-mesh retraction is used (preparation for divergence with epm matrix) 
         if (iepm.ne.0) then 
