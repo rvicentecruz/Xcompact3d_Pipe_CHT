@@ -218,7 +218,7 @@ contains
                 call viscous_filter(duz1(:,:,:,it),0,0)
                 IF (iscalar.NE.0) then
                     DO is=1,numscalar
-                        call viscous_filter(dphi1(:,:,:,it,is),is,0)
+                        call viscous_filter(dphi1(:,:,:,it,is),is,1)
                     ENDDO
                 ENDIF
             ENDIF
